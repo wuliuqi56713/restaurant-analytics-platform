@@ -6,7 +6,7 @@ const config = {
   },
   // 生产环境
   production: {
-    apiBaseUrl: process.env.REACT_APP_API_URL || 'https://restaurant-analytics-backend.onrender.com'
+    apiBaseUrl: 'https://restaurant-analytics-backend.onrender.com'
   }
 };
 
