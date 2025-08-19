@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "餐饮经营年度数据分析与AI战略建议平台",
   "scripts": {
-    "build": "cd client && npm install && npm run build",
+    "build": "cd client && npm install --production=false && npm run build",
     "install-deps": "cd client && npm install",
     "start": "cd client && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
