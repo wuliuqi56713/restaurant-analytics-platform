@@ -4,9 +4,9 @@ const config = {
   development: {
     apiBaseUrl: 'http://localhost:5001'
   },
-  // 生产环境 - 使用Vercel部署的后端服务
+  // 生产环境 - 使用本地服务（临时解决方案）
   production: {
-    apiBaseUrl: 'https://restaurant-analytics-platform.vercel.app'
+    apiBaseUrl: 'http://localhost:5001'
   }
 };
 
