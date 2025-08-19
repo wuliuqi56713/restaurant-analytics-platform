@@ -2,23 +2,18 @@
   "name": "restaurant-analytics-platform",
   "version": "1.0.0",
   "description": "餐饮经营年度数据分析与AI战略建议平台",
-  "main": "server/index.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && npm start",
-    "client": "cd client && npm start",
     "build": "cd client && npm run build",
-    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+    "install-deps": "cd client && npm install",
+    "start": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && node index.js",
+    "client": "cd client && npm start"
   },
-  "keywords": [
-    "restaurant",
-    "analytics",
-    "ai",
-    "business"
-  ],
-  "author": "Vincentxjm",
-  "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
