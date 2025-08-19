@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
+import { t } from '../../utils/i18n';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -20,17 +21,42 @@ ChartJS.register(
 );
 
 const ProfitTrendChart = ({ monthlyData }) => {
-  const monthNames = [
-    '1月', '2月', '3月', '4月', '5月', '6月',
-    '7月', '8月', '9月', '10月', '11月', '12月'
-  ];
+  if (!monthlyData || monthlyData.length === 0) {
+    return (
+      <div style={{ 
+        height: '300px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '8px'
+      }}>
+        <div style={{ color: '#666', fontSize: '14px' }}>
+          {t('loading')}...
+        </div>
+      </div>
+    );
+  }
+
+  const monthNames = t('months');
+  
+  // 确保数据是数字类型
+  const originalData = monthlyData.map(item => parseFloat(item.original_profit) || 0);
+  const organicData = monthlyData.map(item => parseFloat(item.organic_profit) || 0);
+
+  // 计算数据范围用于设置Y轴
+  const allData = [...originalData, ...organicData];
+  const minValue = Math.min(...allData);
+  const maxValue = Math.max(...allData);
+  const range = maxValue - minValue;
+  const padding = range * 0.1; // 10% padding
 
   const data = {
     labels: monthNames,
     datasets: [
       {
-        label: '原始食品利润',
-        data: monthlyData.map(item => item.original_profit),
+        label: `${t('originalFood')} ${t('profit')}`,
+        data: originalData,
         backgroundColor: 'rgba(30, 60, 114, 0.7)',
         borderColor: '#1e3c72',
         borderWidth: 1,
@@ -38,8 +64,8 @@ const ProfitTrendChart = ({ monthlyData }) => {
         borderSkipped: false
       },
       {
-        label: '有机食品利润',
-        data: monthlyData.map(item => item.organic_profit),
+        label: `${t('organicFood')} ${t('profit')}`,
+        data: organicData,
         backgroundColor: 'rgba(255, 215, 0, 0.7)',
         borderColor: '#ffd700',
         borderWidth: 1,
@@ -64,6 +90,15 @@ const ProfitTrendChart = ({ monthlyData }) => {
           }
         }
       },
+      title: {
+        display: true,
+        text: t('profitTrendAnalysis'),
+        font: {
+          size: 16,
+          weight: 'bold'
+        },
+        color: '#1a1a1a'
+      },
       tooltip: {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         titleColor: '#fff',
@@ -74,13 +109,23 @@ const ProfitTrendChart = ({ monthlyData }) => {
         displayColors: true,
         callbacks: {
           label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.y.toLocaleString('zh-CN')} 万元`;
+            return `${context.dataset.label}: ${t('formatNumber', { num: context.parsed.y })}`;
           }
         }
       }
     },
     scales: {
       x: {
+        display: true,
+        title: {
+          display: true,
+          text: t('month'),
+          color: '#666',
+          font: {
+            size: 12,
+            weight: '600'
+          }
+        },
         grid: {
           color: 'rgba(0, 0, 0, 0.1)',
           drawBorder: false
@@ -93,6 +138,18 @@ const ProfitTrendChart = ({ monthlyData }) => {
         }
       },
       y: {
+        display: true,
+        title: {
+          display: true,
+          text: `${t('profit')} (${t('millionYuan')})`,
+          color: '#666',
+          font: {
+            size: 12,
+            weight: '600'
+          }
+        },
+        min: Math.max(0, minValue - padding), // 确保最小值不为负数
+        max: maxValue + padding,
         grid: {
           color: 'rgba(0, 0, 0, 0.1)',
           drawBorder: false
@@ -103,7 +160,7 @@ const ProfitTrendChart = ({ monthlyData }) => {
             size: 11
           },
           callback: function(value) {
-            return value.toLocaleString('zh-CN') + '万';
+            return t('formatNumber', { num: value });
           }
         }
       }

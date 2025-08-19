@@ -2,6 +2,8 @@ import React from 'react';
 import { Layout, Menu, Typography } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BarChartOutlined, FormOutlined } from '@ant-design/icons';
+import { t } from '../utils/i18n';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const { Header: AntHeader } = Layout;
 const { Title } = Typography;
@@ -10,20 +12,40 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 检查是否有分析数据
+  const hasAnalysisData = () => {
+    const localData = localStorage.getItem('analysisData');
+    if (localData) {
+      try {
+        const data = JSON.parse(localData);
+        return data && data.summary && data.monthlyData;
+      } catch (error) {
+        return false;
+      }
+    }
+    return false;
+  };
+
   const menuItems = [
     {
       key: '/',
       icon: <FormOutlined />,
-      label: '数据输入',
+      label: t('dataInput'),
     },
     {
       key: '/analysis',
       icon: <BarChartOutlined />,
-      label: '分析结果',
+      label: t('analysisResults'),
+      disabled: !hasAnalysisData(),
+      style: !hasAnalysisData() ? { color: '#ccc', cursor: 'not-allowed' } : {}
     },
   ];
 
-  const handleMenuClick = ({ key }) => {
+  const handleMenuClick = ({ key, item }) => {
+    // 如果菜单项被禁用，不执行导航
+    if (item.disabled) {
+      return;
+    }
     navigate(key);
   };
 
@@ -46,21 +68,24 @@ const Header = () => {
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text'
         }}>
-          🍽️ 餐饮分析平台
+          {t('platformTitle')}
         </Title>
       </div>
       
-      <Menu
-        mode="horizontal"
-        selectedKeys={[location.pathname]}
-        onClick={handleMenuClick}
-        items={menuItems}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          minWidth: '200px'
-        }}
-      />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <Menu
+          mode="horizontal"
+          selectedKeys={[location.pathname]}
+          onClick={handleMenuClick}
+          items={menuItems}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            minWidth: '200px'
+          }}
+        />
+        <LanguageSwitcher />
+      </div>
     </AntHeader>
   );
 };

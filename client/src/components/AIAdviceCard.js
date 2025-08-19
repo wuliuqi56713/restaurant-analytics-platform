@@ -1,88 +1,53 @@
 import React from 'react';
-import { Card, Typography, Button, Spin, Divider } from 'antd';
+import { Card, Typography, Button, Spin } from 'antd';
 import { RobotOutlined, BulbOutlined } from '@ant-design/icons';
+import { t } from '../utils/i18n';
 
 const { Title, Paragraph, Text } = Typography;
 
-const AIAdviceCard = ({ aiAdvice, aiLoading, onGetAdvice, summary }) => {
-  const formatNumber = (num) => {
-    return num.toLocaleString('zh-CN', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  };
-
-  const formatPercentage = (num) => {
-    return num.toFixed(2);
-  };
-
+const AIAdviceCard = ({ aiAdvice, loading, onGenerate }) => {
   return (
     <Card className="analytics-card">
       <Title level={3} className="form-section-title">
-        🤖 AI智能分析建议
+        🤖 {t('aiAdvice')}
       </Title>
       
       {!aiAdvice && (
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
           <RobotOutlined style={{ fontSize: '48px', color: '#1e3c72', marginBottom: '16px' }} />
           <Title level={4} style={{ color: '#666', marginBottom: '16px' }}>
-            获取AI驱动的商业分析建议
+            {t('getAiAdvice')}
           </Title>
           <Text style={{ color: '#999', display: 'block', marginBottom: '24px' }}>
-            基于您的经营数据，AI将为您提供专业的战略建议和风险分析
+            {t('mockAdvice')}
           </Text>
           <Button
             type="primary"
             size="large"
             icon={<BulbOutlined />}
-            onClick={onGetAdvice}
-            loading={aiLoading}
+            onClick={onGenerate}
+            loading={loading}
             className="submit-button"
             style={{ width: 200 }}
           >
-            {aiLoading ? 'AI分析中...' : '获取AI建议'}
+            {loading ? t('loading') : t('getAiAdvice')}
           </Button>
         </div>
       )}
 
-      {aiLoading && (
+      {loading && (
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
           <Spin size="large" />
           <div style={{ marginTop: '20px' }}>
-            <Text>AI正在分析您的数据，请稍候...</Text>
+            <Text>{t('loading')}</Text>
           </div>
         </div>
       )}
 
-      {aiAdvice && !aiLoading && (
+      {aiAdvice && !loading && (
         <div>
-          <div style={{ 
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)', 
-            padding: '20px', 
-            borderRadius: '12px',
-            marginBottom: '24px',
-            borderLeft: '4px solid #ffd700'
-          }}>
-            <Title level={4} style={{ color: '#1e3c72', marginBottom: '16px' }}>
-              📊 数据概览
-            </Title>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-              <div>
-                <Text strong>营业额变化：</Text>
-                <Text>从 {formatNumber(summary.original.totalRevenue)} 万元 → {formatNumber(summary.organic.totalRevenue)} 万元</Text>
-              </div>
-              <div>
-                <Text strong>成本变化：</Text>
-                <Text>从 {formatNumber(summary.original.totalCost)} 万元 → {formatNumber(summary.organic.totalCost)} 万元</Text>
-              </div>
-              <div>
-                <Text strong>利润变化：</Text>
-                <Text>从 {formatNumber(summary.original.totalProfit)} 万元 → {formatNumber(summary.organic.totalProfit)} 万元</Text>
-              </div>
-            </div>
-          </div>
-
-          <Divider />
-
           <Title level={4} style={{ color: '#1e3c72', marginBottom: '16px' }}>
-            💡 AI战略建议
+            💡 {t('aiAdvice')}
           </Title>
           
           <div style={{ 
@@ -104,13 +69,13 @@ const AIAdviceCard = ({ aiAdvice, aiLoading, onGetAdvice, summary }) => {
               type="default"
               size="large"
               icon={<BulbOutlined />}
-              onClick={onGetAdvice}
-              style={{ marginRight: '16px' }}
+              onClick={onGenerate}
+              style={{ marginRight: '16px', minWidth: '120px' }}
             >
-              重新分析
+              {t('regenerateAdvice')}
             </Button>
             <Text style={{ color: '#999', fontSize: '12px' }}>
-              * AI建议基于当前数据分析生成，仅供参考
+              * {t('mockAdvice')}
             </Text>
           </div>
         </div>

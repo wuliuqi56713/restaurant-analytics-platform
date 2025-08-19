@@ -10,7 +10,12 @@
     "build": "cd client && npm run build",
     "install-all": "npm install && cd server && npm install && cd ../client && npm install"
   },
-  "keywords": ["restaurant", "analytics", "ai", "business"],
+  "keywords": [
+    "restaurant",
+    "analytics",
+    "ai",
+    "business"
+  ],
   "author": "Vincentxjm",
   "license": "MIT",
   "devDependencies": {

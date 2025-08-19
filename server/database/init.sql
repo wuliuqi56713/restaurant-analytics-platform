@@ -29,20 +29,8 @@ CREATE TABLE IF NOT EXISTS analysis_results (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 插入示例数据（原始食品）
-INSERT OR REPLACE INTO monthly_data (month, original_revenue, original_cost, original_profit, organic_revenue, organic_cost, organic_profit) VALUES
-(1, 200, 60, 140, 250, 75, 175),
-(2, 220, 66, 154, 280, 84, 196),
-(3, 240, 72, 168, 300, 90, 210),
-(4, 260, 78, 182, 320, 96, 224),
-(5, 280, 84, 196, 340, 102, 238),
-(6, 300, 90, 210, 360, 108, 252),
-(7, 320, 96, 224, 380, 114, 266),
-(8, 340, 102, 238, 400, 120, 280),
-(9, 360, 108, 252, 420, 126, 294),
-(10, 380, 114, 266, 440, 132, 308),
-(11, 400, 120, 280, 460, 138, 322),
-(12, 420, 126, 294, 480, 144, 336);
+-- 数据库初始化时不插入示例数据
+-- 用户需要先输入数据才能进行分析
 
 -- 创建索引以提高查询性能
 CREATE INDEX IF NOT EXISTS idx_monthly_data_month ON monthly_data(month);

@@ -1,30 +1,26 @@
 import React from 'react';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { t } from '../../utils/i18n';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
-  Legend,
-  Filler
+  Legend
 } from 'chart.js';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
-  Legend,
-  Filler
+  Legend
 );
 
-const RevenueChart = ({ monthlyData }) => {
+const CostStructureTrendChart = ({ monthlyData }) => {
   if (!monthlyData || monthlyData.length === 0) {
     return (
       <div style={{ 
@@ -42,49 +38,48 @@ const RevenueChart = ({ monthlyData }) => {
     );
   }
 
-  const monthNames = t('months');
+  const months = t('months');
   
-  // 确保数据是数字类型
-  const originalData = monthlyData.map(item => parseFloat(item.original_revenue) || 0);
-  const organicData = monthlyData.map(item => parseFloat(item.organic_revenue) || 0);
+  // 确保数据是数字类型并计算成本结构：成本占营业额的比例
+  const originalCostRatios = monthlyData.map(item => {
+    const revenue = parseFloat(item.original_revenue) || 0;
+    const cost = parseFloat(item.original_cost) || 0;
+    return revenue > 0 ? (cost / revenue * 100) : 0;
+  });
+  
+  const organicCostRatios = monthlyData.map(item => {
+    const revenue = parseFloat(item.organic_revenue) || 0;
+    const cost = parseFloat(item.organic_cost) || 0;
+    return revenue > 0 ? (cost / revenue * 100) : 0;
+  });
 
   // 计算数据范围用于设置Y轴
-  const allData = [...originalData, ...organicData];
+  const allData = [...originalCostRatios, ...organicCostRatios];
   const minValue = Math.min(...allData);
   const maxValue = Math.max(...allData);
   const range = maxValue - minValue;
   const padding = range * 0.1; // 10% padding
 
   const data = {
-    labels: monthNames,
+    labels: months,
     datasets: [
       {
-        label: `${t('originalFood')} ${t('revenue')}`,
-        data: originalData,
-        borderColor: '#1e3c72',
-        backgroundColor: 'rgba(30, 60, 114, 0.1)',
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#1e3c72',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 6,
-        pointHoverRadius: 8
+        label: `${t('originalFood')} ${t('costRatio')}`,
+        data: originalCostRatios,
+        backgroundColor: 'rgba(255, 99, 132, 0.8)',
+        borderColor: '#ff6384',
+        borderWidth: 2,
+        borderRadius: 4,
+        borderSkipped: false
       },
       {
-        label: `${t('organicFood')} ${t('revenue')}`,
-        data: organicData,
-        borderColor: '#ffd700',
-        backgroundColor: 'rgba(255, 215, 0, 0.1)',
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#ffd700',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 6,
-        pointHoverRadius: 8
+        label: `${t('organicFood')} ${t('costRatio')}`,
+        data: organicCostRatios,
+        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+        borderColor: '#36a2eb',
+        borderWidth: 2,
+        borderRadius: 4,
+        borderSkipped: false
       }
     ]
   };
@@ -100,13 +95,13 @@ const RevenueChart = ({ monthlyData }) => {
           padding: 20,
           font: {
             size: 12,
-            weight: '600'
+            weight: 'bold'
           }
         }
       },
       title: {
         display: true,
-        text: t('monthlyRevenueComparison'),
+        text: t('costStructureChange'),
         font: {
           size: 16,
           weight: 'bold'
@@ -117,13 +112,14 @@ const RevenueChart = ({ monthlyData }) => {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         titleColor: '#fff',
         bodyColor: '#fff',
-        borderColor: '#ffd700',
+        borderColor: '#1890ff',
         borderWidth: 1,
         cornerRadius: 8,
         displayColors: true,
         callbacks: {
           label: function(context) {
-            return `${context.dataset.label}: ${t('formatNumber', { num: context.parsed.y })}`;
+            const number = parseFloat(context.parsed.y);
+            return `${context.dataset.label}: ${isNaN(number) ? '0.00' : number.toFixed(2)}%`;
           }
         }
       }
@@ -155,7 +151,7 @@ const RevenueChart = ({ monthlyData }) => {
         display: true,
         title: {
           display: true,
-          text: `${t('revenue')} (${t('millionYuan')})`,
+          text: `${t('costRatio')} (%)`,
           color: '#666',
           font: {
             size: 12,
@@ -174,7 +170,7 @@ const RevenueChart = ({ monthlyData }) => {
             size: 11
           },
           callback: function(value) {
-            return t('formatNumber', { num: value });
+            return value + '%';
           }
         }
       }
@@ -182,19 +178,14 @@ const RevenueChart = ({ monthlyData }) => {
     interaction: {
       intersect: false,
       mode: 'index'
-    },
-    elements: {
-      point: {
-        hoverBackgroundColor: '#fff'
-      }
     }
   };
 
   return (
     <div style={{ height: '300px', position: 'relative' }}>
-      <Line data={data} options={options} />
+      <Bar data={data} options={options} />
     </div>
   );
 };
 
-export default RevenueChart;
+export default CostStructureTrendChart;

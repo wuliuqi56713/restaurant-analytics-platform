@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
+import { t } from '../../utils/i18n';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -21,10 +22,10 @@ ChartJS.register(
 
 const ComparisonChart = ({ summary }) => {
   const data = {
-    labels: ['营业额', '成本', '利润'],
+    labels: [t('totalRevenue'), t('totalCost'), t('totalProfit')],
     datasets: [
       {
-        label: '原始食品',
+        label: t('originalFood'),
         data: [
           summary.original.totalRevenue,
           summary.original.totalCost,
@@ -37,7 +38,7 @@ const ComparisonChart = ({ summary }) => {
         borderSkipped: false
       },
       {
-        label: '有机食品',
+        label: t('organicFood'),
         data: [
           summary.organic.totalRevenue,
           summary.organic.totalCost,
@@ -77,7 +78,7 @@ const ComparisonChart = ({ summary }) => {
         displayColors: true,
         callbacks: {
           label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.y.toLocaleString('zh-CN')} 万元`;
+            return `${context.dataset.label}: ${t('formatNumber', { num: context.parsed.y })}`;
           }
         }
       }
@@ -106,7 +107,7 @@ const ComparisonChart = ({ summary }) => {
             size: 11
           },
           callback: function(value) {
-            return value.toLocaleString('zh-CN') + '万';
+            return t('formatNumber', { num: value });
           }
         }
       }

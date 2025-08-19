@@ -24,7 +24,7 @@ ChartJS.register(
   Filler
 );
 
-const RevenueChart = ({ monthlyData }) => {
+const ProfitMarginChart = ({ monthlyData }) => {
   if (!monthlyData || monthlyData.length === 0) {
     return (
       <div style={{ 
@@ -42,45 +42,54 @@ const RevenueChart = ({ monthlyData }) => {
     );
   }
 
-  const monthNames = t('months');
+  const months = t('months');
   
-  // 确保数据是数字类型
-  const originalData = monthlyData.map(item => parseFloat(item.original_revenue) || 0);
-  const organicData = monthlyData.map(item => parseFloat(item.organic_revenue) || 0);
+  // 确保数据是数字类型并计算利润率 = (利润 / 营业额) * 100
+  const originalProfitMargins = monthlyData.map(item => {
+    const revenue = parseFloat(item.original_revenue) || 0;
+    const profit = parseFloat(item.original_profit) || 0;
+    return revenue > 0 ? (profit / revenue * 100) : 0;
+  });
+  
+  const organicProfitMargins = monthlyData.map(item => {
+    const revenue = parseFloat(item.organic_revenue) || 0;
+    const profit = parseFloat(item.organic_profit) || 0;
+    return revenue > 0 ? (profit / revenue * 100) : 0;
+  });
 
   // 计算数据范围用于设置Y轴
-  const allData = [...originalData, ...organicData];
+  const allData = [...originalProfitMargins, ...organicProfitMargins];
   const minValue = Math.min(...allData);
   const maxValue = Math.max(...allData);
   const range = maxValue - minValue;
   const padding = range * 0.1; // 10% padding
 
   const data = {
-    labels: monthNames,
+    labels: months,
     datasets: [
       {
-        label: `${t('originalFood')} ${t('revenue')}`,
-        data: originalData,
-        borderColor: '#1e3c72',
-        backgroundColor: 'rgba(30, 60, 114, 0.1)',
+        label: `${t('originalFood')} ${t('profitMargin')}`,
+        data: originalProfitMargins,
+        borderColor: '#1890ff',
+        backgroundColor: 'rgba(24, 144, 255, 0.1)',
         borderWidth: 3,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: '#1e3c72',
+        pointBackgroundColor: '#1890ff',
         pointBorderColor: '#fff',
         pointBorderWidth: 2,
         pointRadius: 6,
         pointHoverRadius: 8
       },
       {
-        label: `${t('organicFood')} ${t('revenue')}`,
-        data: organicData,
-        borderColor: '#ffd700',
-        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+        label: `${t('organicFood')} ${t('profitMargin')}`,
+        data: organicProfitMargins,
+        borderColor: '#52c41a',
+        backgroundColor: 'rgba(82, 196, 26, 0.1)',
         borderWidth: 3,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: '#ffd700',
+        pointBackgroundColor: '#52c41a',
         pointBorderColor: '#fff',
         pointBorderWidth: 2,
         pointRadius: 6,
@@ -100,13 +109,13 @@ const RevenueChart = ({ monthlyData }) => {
           padding: 20,
           font: {
             size: 12,
-            weight: '600'
+            weight: 'bold'
           }
         }
       },
       title: {
         display: true,
-        text: t('monthlyRevenueComparison'),
+        text: t('profitMarginTrendAnalysis'),
         font: {
           size: 16,
           weight: 'bold'
@@ -117,13 +126,14 @@ const RevenueChart = ({ monthlyData }) => {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         titleColor: '#fff',
         bodyColor: '#fff',
-        borderColor: '#ffd700',
+        borderColor: '#1890ff',
         borderWidth: 1,
         cornerRadius: 8,
         displayColors: true,
         callbacks: {
           label: function(context) {
-            return `${context.dataset.label}: ${t('formatNumber', { num: context.parsed.y })}`;
+            const number = parseFloat(context.parsed.y);
+            return `${context.dataset.label}: ${isNaN(number) ? '0.00' : number.toFixed(2)}%`;
           }
         }
       }
@@ -155,7 +165,7 @@ const RevenueChart = ({ monthlyData }) => {
         display: true,
         title: {
           display: true,
-          text: `${t('revenue')} (${t('millionYuan')})`,
+          text: `${t('profitMargin')} (%)`,
           color: '#666',
           font: {
             size: 12,
@@ -174,7 +184,7 @@ const RevenueChart = ({ monthlyData }) => {
             size: 11
           },
           callback: function(value) {
-            return t('formatNumber', { num: value });
+            return value + '%';
           }
         }
       }
@@ -197,4 +207,4 @@ const RevenueChart = ({ monthlyData }) => {
   );
 };
 
-export default RevenueChart;
+export default ProfitMarginChart;
