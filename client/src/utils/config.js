@@ -4,9 +4,9 @@ const config = {
   development: {
     apiBaseUrl: 'http://localhost:5001'
   },
-  // 生产环境
+  // 生产环境 - 临时使用本地服务进行测试
   production: {
-    apiBaseUrl: 'https://restaurant-analytics-backend.onrender.com'
+    apiBaseUrl: 'http://localhost:5001'
   }
 };
 
