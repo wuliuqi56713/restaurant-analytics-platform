@@ -4,9 +4,9 @@ const config = {
   development: {
     apiBaseUrl: 'http://localhost:5001'
   },
-  // 生产环境 - 使用Railway部署的后端服务
+  // 生产环境 - 使用Vercel部署的后端服务
   production: {
-    apiBaseUrl: 'https://restaurant-analytics-backend-production.up.railway.app'
+    apiBaseUrl: 'https://restaurant-analytics-platform.vercel.app'
   }
 };
 
