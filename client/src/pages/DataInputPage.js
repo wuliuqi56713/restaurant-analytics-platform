@@ -11,10 +11,9 @@ import {
   Typography, 
   message,
   Divider,
-  Alert,
-  Upload
+  Alert
 } from 'antd';
-import { CalculatorOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
+import { CalculatorOutlined } from '@ant-design/icons';
 import { apiBaseUrl } from '../utils/config';
 import DataImportExport from '../components/DataImportExport';
 // 简单的数据验证函数
