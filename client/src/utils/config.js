@@ -4,9 +4,9 @@ const config = {
   development: {
     apiBaseUrl: 'http://localhost:5001'
   },
-  // 生产环境 - 临时使用本地服务进行测试
+  // 生产环境 - 使用Railway部署的后端服务
   production: {
-    apiBaseUrl: 'http://localhost:5001'
+    apiBaseUrl: 'https://restaurant-analytics-backend-production.up.railway.app'
   }
 };
 
