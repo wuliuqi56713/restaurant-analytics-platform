@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/restaurant-analytics-platform/static/css/main.81a2395c.css",
-    "main.js": "/restaurant-analytics-platform/static/js/main.de74ae9d.js",
+    "main.js": "/restaurant-analytics-platform/static/js/main.d7b84fd7.js",
     "index.html": "/restaurant-analytics-platform/index.html",
     "main.81a2395c.css.map": "/restaurant-analytics-platform/static/css/main.81a2395c.css.map",
-    "main.de74ae9d.js.map": "/restaurant-analytics-platform/static/js/main.de74ae9d.js.map"
+    "main.d7b84fd7.js.map": "/restaurant-analytics-platform/static/js/main.d7b84fd7.js.map"
   },
   "entrypoints": [
     "static/css/main.81a2395c.css",
-    "static/js/main.de74ae9d.js"
+    "static/js/main.d7b84fd7.js"
   ]
 }
