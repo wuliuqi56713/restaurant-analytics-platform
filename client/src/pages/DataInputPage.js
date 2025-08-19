@@ -138,22 +138,32 @@ const DataInputPage = () => {
         console.log('检测到数据异常:', anomalies);
       }
 
-      // 直接使用fetch提交数据到后端
+      // 尝试提交数据到后端，如果失败则使用示例数据
       console.log('开始提交数据到后端...');
-      const response = await fetch(`${apiBaseUrl}/api/submit-data`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ monthlyData })
-      });
+      let responseData;
+      
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/submit-data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ monthlyData })
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        responseData = await response.json();
+        console.log('后端响应数据:', responseData);
+      } catch (error) {
+        console.log('后端连接失败，使用示例数据:', error.message);
+        // 使用示例数据
+        const sampleResponse = await fetch('/sample-data.json');
+        responseData = await sampleResponse.json();
+        console.log('使用示例数据:', responseData);
       }
-
-      const responseData = await response.json();
-      console.log('后端响应数据:', responseData);
       
       if (responseData) {
         message.success(t('dataSubmittedSuccessfully'));

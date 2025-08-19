@@ -4,9 +4,9 @@ const config = {
   development: {
     apiBaseUrl: 'http://localhost:5001'
   },
-  // 生产环境 - 使用本地服务（临时解决方案）
+  // 生产环境 - 使用公共API服务
   production: {
-    apiBaseUrl: 'http://localhost:5001'
+    apiBaseUrl: 'https://api.jsonbin.io/v3/b'
   }
 };
 
