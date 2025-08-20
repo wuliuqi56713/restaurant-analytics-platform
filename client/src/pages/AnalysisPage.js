@@ -34,20 +34,27 @@ const AnalysisPage = () => {
         
         setAnalysisData(data);
         
-        // 转换数据格式以匹配图表组件的期望
-        const convertedMonthlyData = (data.monthlyData || []).map(item => ({
-          originalRevenue: parseFloat(item.originalRevenue || 0),
-          originalCost: parseFloat(item.originalCost || 0),
-          originalProfit: parseFloat(item.originalProfit || 0),
-          organicRevenue: parseFloat(item.organicRevenue || 0),
-          organicCost: parseFloat(item.organicCost || 0),
-          organicProfit: parseFloat(item.organicProfit || 0)
-        }));
+        // 确保monthlyData存在且格式正确
+        if (data.monthlyData && Array.isArray(data.monthlyData)) {
+          const convertedMonthlyData = data.monthlyData.map(item => ({
+            originalRevenue: parseFloat(item.originalRevenue || 0),
+            originalCost: parseFloat(item.originalCost || 0),
+            originalProfit: parseFloat(item.originalProfit || 0),
+            organicRevenue: parseFloat(item.organicRevenue || 0),
+            organicCost: parseFloat(item.organicCost || 0),
+            organicProfit: parseFloat(item.organicProfit || 0)
+          }));
+          
+          console.log('转换后的月度数据:', convertedMonthlyData); // 调试日志
+          console.log('数据长度:', convertedMonthlyData.length);
+          
+          setMonthlyData(convertedMonthlyData);
+        } else {
+          console.error('monthlyData格式错误:', data.monthlyData);
+          message.error('数据格式错误，请重新输入数据');
+          return;
+        }
         
-        console.log('转换后的月度数据:', convertedMonthlyData); // 调试日志
-        console.log('数据长度:', convertedMonthlyData.length);
-        
-        setMonthlyData(convertedMonthlyData);
         setSummary(data.summary || {});
         setAiAdvice(data.aiAdvice || {});
         

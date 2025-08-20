@@ -87,6 +87,7 @@ app.post('/api/submit-data', async (req, res) => {
     res.json({
       success: true,
       message: '数据提交成功',
+      monthlyData,
       summary,
       aiAdvice
     });
