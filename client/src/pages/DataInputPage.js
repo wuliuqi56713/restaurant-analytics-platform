@@ -138,12 +138,19 @@ const DataInputPage = () => {
         console.log('检测到数据异常:', anomalies);
       }
 
-      // 尝试提交数据到后端，如果失败则使用示例数据
+      // 提交数据到后端
       console.log('开始提交数据到后端...');
       let responseData;
       
       try {
-        const response = await fetch(`${apiBaseUrl}/api/submit-data`, {
+        // 使用相对路径，让Netlify自动处理API路由
+        const apiUrl = process.env.NODE_ENV === 'production' 
+          ? '/api/submit-data' 
+          : `${apiBaseUrl}/api/submit-data`;
+          
+        console.log('API URL:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -159,13 +166,18 @@ const DataInputPage = () => {
         console.log('后端响应数据:', responseData);
       } catch (error) {
         console.log('后端连接失败，使用示例数据:', error.message);
-        // 使用示例数据
-        const sampleResponse = await fetch('/sample-data.json');
-        responseData = await sampleResponse.json();
-        console.log('使用示例数据:', responseData);
+        // 使用示例数据作为备用
+        try {
+          const sampleResponse = await fetch('/sample-data.json');
+          responseData = await sampleResponse.json();
+          console.log('使用示例数据:', responseData);
+        } catch (sampleError) {
+          console.error('示例数据也加载失败:', sampleError);
+          throw new Error('无法获取数据，请检查网络连接');
+        }
       }
       
-      if (responseData) {
+      if (responseData && responseData.success) {
         message.success(t('dataSubmittedSuccessfully'));
         // 将数据存储到localStorage，然后跳转
         localStorage.setItem('analysisData', JSON.stringify(responseData));
@@ -173,15 +185,11 @@ const DataInputPage = () => {
           navigate('/analysis');
         }, 1500);
       } else {
-        throw new Error('后端返回空数据');
+        throw new Error('后端返回数据格式错误');
       }
     } catch (error) {
       console.error('提交失败:', error);
       console.error('错误详情:', error.message);
-      if (error.response) {
-        console.error('响应状态:', error.response.status);
-        console.error('响应数据:', error.response.data);
-      }
       message.error(`${t('dataSubmissionFailed')}: ${error.message}`);
     } finally {
       setLoading(false);

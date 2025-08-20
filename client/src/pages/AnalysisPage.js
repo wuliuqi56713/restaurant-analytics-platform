@@ -43,9 +43,27 @@ const AnalysisPage = () => {
         console.log('Converted monthly data:', convertedMonthlyData); // 调试日志
         setMonthlyData(convertedMonthlyData);
         setSummary(data.summary || {});
-        setAiAdvice(data.aiAdvice || '');
+        setAiAdvice(data.aiAdvice || {});
       } else {
         message.warning(t('noAnalysisData'));
+        // 如果没有数据，尝试从后端获取
+        try {
+          const apiUrl = process.env.NODE_ENV === 'production' 
+            ? '/api/data' 
+            : `${apiBaseUrl}/api/data`;
+          const response = await fetch(apiUrl);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.monthlyData && data.monthlyData.length > 0) {
+              setAnalysisData(data);
+              setMonthlyData(data.monthlyData);
+              setSummary(data.summary || {});
+              setAiAdvice(data.aiAdvice || {});
+            }
+          }
+        } catch (error) {
+          console.log('无法从后端获取数据:', error);
+        }
       }
     } catch (error) {
       console.error('加载分析数据失败:', error);
@@ -63,27 +81,34 @@ const AnalysisPage = () => {
 
     setAiLoading(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/api/ai-advice`, {
+      // 使用相对路径，让Netlify自动处理API路由
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? '/api/submit-data' 
+        : `${apiBaseUrl}/api/submit-data`;
+        
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          monthlyData: monthlyData,
-          summary: summary,
-          language: localStorage.getItem('language') || 'en'
+          monthlyData: monthlyData
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setAiAdvice(data.advice);
-        
-        // 更新localStorage
-        const updatedData = { ...analysisData, aiAdvice: data.advice };
-        localStorage.setItem('analysisData', JSON.stringify(updatedData));
-        
-        message.success(t('aiAdviceGenerated'));
+        if (data.aiAdvice) {
+          setAiAdvice(data.aiAdvice);
+          
+          // 更新localStorage
+          const updatedData = { ...analysisData, aiAdvice: data.aiAdvice };
+          localStorage.setItem('analysisData', JSON.stringify(updatedData));
+          
+          message.success(t('aiAdviceGenerated'));
+        } else {
+          throw new Error('AI建议数据为空');
+        }
       } else {
         throw new Error('AI建议生成失败');
       }
