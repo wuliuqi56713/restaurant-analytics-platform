@@ -108,34 +108,57 @@ app.get('/api/data', (req, res) => {
 
 // AI建议生成函数
 function generateAIAdvice(summary, monthlyData) {
-  const { totalRevenue, totalProfit, profitMargin } = summary;
+  const { totalRevenue, totalCost, totalProfit, profitMargin } = summary;
   
   let advice = {
     revenue: [],
     cost: [],
     profit: [],
-    strategy: []
+    strategy: [],
+    seasonal: [],
+    recommendations: []
   };
 
-  // 收入建议
+  // 收入分析建议
   if (totalRevenue.total < 1000) {
-    advice.revenue.push('建议增加营销投入，扩大客户群体');
+    advice.revenue.push('总收入偏低，建议增加营销投入，扩大客户群体');
+    advice.revenue.push('考虑开发新的产品线或服务项目');
   } else if (totalRevenue.total > 2000) {
     advice.revenue.push('收入表现良好，可以考虑扩大规模');
+    advice.revenue.push('建议投资更多资源到表现最好的业务线');
+  } else {
+    advice.revenue.push('收入处于中等水平，建议优化现有业务模式');
   }
 
-  // 利润建议
-  if (profitMargin.total < 20) {
+  // 成本分析建议
+  const costRatio = totalCost.total / totalRevenue.total;
+  if (costRatio > 0.8) {
+    advice.cost.push('成本占比过高，建议优化供应链管理');
+    advice.cost.push('考虑寻找更优质的供应商或批量采购');
+  } else if (costRatio < 0.6) {
+    advice.cost.push('成本控制良好，可以考虑提高服务质量');
+  } else {
+    advice.cost.push('成本结构合理，建议保持当前水平');
+  }
+
+  // 利润分析建议
+  if (profitMargin.total < 15) {
     advice.profit.push('利润率偏低，建议优化成本结构');
-  } else if (profitMargin.total > 40) {
-    advice.profit.push('利润率优秀，可以考虑增加投资');
+    advice.profit.push('考虑提高产品定价或增加高利润产品');
+  } else if (profitMargin.total > 35) {
+    advice.profit.push('利润率优秀，可以考虑增加投资扩大规模');
+    advice.profit.push('建议将部分利润投入到研发或市场拓展');
+  } else {
+    advice.profit.push('利润率处于健康水平，建议保持稳定发展');
   }
 
-  // 策略建议
+  // 业务策略建议
   if (totalProfit.organic > totalProfit.original) {
     advice.strategy.push('有机食品业务表现更好，建议重点发展');
+    advice.strategy.push('可以考虑增加有机食品的产品种类');
   } else {
     advice.strategy.push('传统食品业务占主导，建议平衡发展');
+    advice.strategy.push('考虑逐步增加有机食品的投入');
   }
 
   // 季节性分析
@@ -143,8 +166,22 @@ function generateAIAdvice(summary, monthlyData) {
   const maxMonth = monthlyRevenues.indexOf(Math.max(...monthlyRevenues)) + 1;
   const minMonth = monthlyRevenues.indexOf(Math.min(...monthlyRevenues)) + 1;
   
-  advice.strategy.push(`第${maxMonth}月是销售高峰，建议提前准备库存`);
-  advice.strategy.push(`第${minMonth}月是销售低谷，建议加强促销活动`);
+  advice.seasonal.push(`第${maxMonth}月是销售高峰，建议提前准备库存和人员`);
+  advice.seasonal.push(`第${minMonth}月是销售低谷，建议加强促销活动和营销投入`);
+  
+  // 计算季节性强度
+  const avgRevenue = monthlyRevenues.reduce((a, b) => a + b, 0) / monthlyRevenues.length;
+  const seasonalStrength = ((Math.max(...monthlyRevenues) - Math.min(...monthlyRevenues)) / avgRevenue * 100).toFixed(1);
+  advice.seasonal.push(`季节性强度为${seasonalStrength}%，建议根据季节性特点调整经营策略`);
+
+  // 综合建议
+  advice.recommendations.push('建议每月进行数据分析，及时调整经营策略');
+  advice.recommendations.push('考虑建立客户反馈机制，了解市场需求变化');
+  advice.recommendations.push('建议制定详细的年度经营计划，包括收入目标和成本控制');
+  
+  if (totalRevenue.total > 1500) {
+    advice.recommendations.push('业务规模较大，建议考虑引入专业的管理系统');
+  }
 
   return advice;
 }
