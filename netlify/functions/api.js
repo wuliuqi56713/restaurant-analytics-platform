@@ -73,6 +73,22 @@ app.post('/api/submit-data', async (req, res) => {
         organic: totalOrganicRevenue > 0 ? (totalOrganicProfit / totalOrganicRevenue * 100) : 0,
         total: (totalOriginalRevenue + totalOrganicRevenue) > 0 ? 
           ((totalOriginalProfit + totalOrganicProfit) / (totalOriginalRevenue + totalOrganicRevenue) * 100) : 0
+      },
+      // 添加同比计算数据
+      comparison: {
+        revenueGrowthRate: totalOriginalRevenue > 0 ? 
+          ((totalOrganicRevenue - totalOriginalRevenue) / totalOriginalRevenue * 100) : 0,
+        costGrowthRate: totalOriginalCost > 0 ? 
+          ((totalOrganicCost - totalOriginalCost) / totalOriginalCost * 100) : 0,
+        profitGrowthRate: totalOriginalProfit > 0 ? 
+          ((totalOrganicProfit - totalOriginalProfit) / totalOriginalProfit * 100) : 0,
+        marginChange: (totalOrganicRevenue > 0 ? (totalOrganicProfit / totalOrganicRevenue * 100) : 0) - 
+                     (totalOriginalRevenue > 0 ? (totalOriginalProfit / totalOriginalRevenue * 100) : 0),
+        costRatioChange: (totalOrganicRevenue > 0 ? (totalOrganicCost / totalOrganicRevenue * 100) : 0) - 
+                        (totalOriginalRevenue > 0 ? (totalOriginalCost / totalOriginalRevenue * 100) : 0),
+        revenueIncrease: totalOrganicRevenue - totalOriginalRevenue,
+        costIncrease: totalOrganicCost - totalOriginalCost,
+        profitIncrease: totalOrganicProfit - totalOriginalProfit
       }
     };
 

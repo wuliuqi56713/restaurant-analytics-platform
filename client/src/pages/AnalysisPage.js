@@ -218,9 +218,12 @@ const AnalysisPage = () => {
                 suffix={t('millionYuan')}
               />
               <div style={{ marginTop: '12px' }}>
-                <span style={{ color: '#3f8600', fontSize: '16px' }}>
-                  <ArrowUpOutlined />
-                  {formatPercentage(summary?.comparison?.revenueGrowthRate || 0)}%
+                <span style={{ 
+                  color: (summary?.comparison?.revenueGrowthRate || 0) >= 0 ? '#3f8600' : '#cf1322', 
+                  fontSize: '16px' 
+                }}>
+                  {(summary?.comparison?.revenueGrowthRate || 0) >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                  {formatPercentage(Math.abs(summary?.comparison?.revenueGrowthRate || 0))}%
                 </span>
                 <span style={{ color: '#666', marginLeft: '8px', fontSize: '14px' }}>{t('vsLastYear')}</span>
               </div>
@@ -238,9 +241,12 @@ const AnalysisPage = () => {
                 suffix={t('millionYuan')}
               />
               <div style={{ marginTop: '12px' }}>
-                <span style={{ color: '#3f8600', fontSize: '16px' }}>
-                  <ArrowUpOutlined />
-                  {formatPercentage(summary?.comparison?.profitGrowthRate || 0)}%
+                <span style={{ 
+                  color: (summary?.comparison?.profitGrowthRate || 0) >= 0 ? '#3f8600' : '#cf1322', 
+                  fontSize: '16px' 
+                }}>
+                  {(summary?.comparison?.profitGrowthRate || 0) >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                  {formatPercentage(Math.abs(summary?.comparison?.profitGrowthRate || 0))}%
                 </span>
                 <span style={{ color: '#666', marginLeft: '8px', fontSize: '14px' }}>{t('vsLastYear')}</span>
               </div>
@@ -258,9 +264,12 @@ const AnalysisPage = () => {
                 suffix="%"
               />
               <div style={{ marginTop: '12px' }}>
-                <span style={{ color: '#3f8600', fontSize: '16px' }}>
-                  <ArrowUpOutlined />
-                  {formatPercentage(summary?.comparison?.marginChange || 0)}%
+                <span style={{ 
+                  color: (summary?.comparison?.marginChange || 0) >= 0 ? '#3f8600' : '#cf1322', 
+                  fontSize: '16px' 
+                }}>
+                  {(summary?.comparison?.marginChange || 0) >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                  {formatPercentage(Math.abs(summary?.comparison?.marginChange || 0))}%
                 </span>
                 <span style={{ color: '#666', marginLeft: '8px', fontSize: '14px' }}>{t('vsLastYear')}</span>
               </div>
@@ -278,9 +287,12 @@ const AnalysisPage = () => {
                 suffix="%"
               />
               <div style={{ marginTop: '12px' }}>
-                <span style={{ color: '#cf1322', fontSize: '16px' }}>
-                  <ArrowDownOutlined />
-                  {formatPercentage(summary?.comparison?.costRatioChange || 0)}%
+                <span style={{ 
+                  color: (summary?.comparison?.costRatioChange || 0) <= 0 ? '#3f8600' : '#cf1322', 
+                  fontSize: '16px' 
+                }}>
+                  {(summary?.comparison?.costRatioChange || 0) <= 0 ? <ArrowDownOutlined /> : <ArrowUpOutlined />}
+                  {formatPercentage(Math.abs(summary?.comparison?.costRatioChange || 0))}%
                 </span>
                 <span style={{ color: '#666', marginLeft: '8px', fontSize: '14px' }}>{t('vsLastYear')}</span>
               </div>
