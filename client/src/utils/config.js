@@ -4,9 +4,9 @@ const config = {
   development: {
     apiBaseUrl: 'http://localhost:5001'
   },
-  // 生产环境 - 使用Render后端
+  // 生产环境 - 使用Netlify Functions
   production: {
-    apiBaseUrl: process.env.REACT_APP_API_URL || 'https://restaurant-analytics-backend.onrender.com'
+    apiBaseUrl: process.env.REACT_APP_API_URL || ''
   }
 };
 
