@@ -10,14 +10,28 @@ const ProtectedRoute = ({ children }) => {
   const hasAnalysisData = () => {
     // 检查localStorage中是否有数据
     const localData = localStorage.getItem('analysisData');
+    console.log('ProtectedRoute检查数据:', localData);
+    
     if (localData) {
       try {
         const data = JSON.parse(localData);
-        return data && data.summary && data.monthlyData;
+        console.log('ProtectedRoute解析的数据:', data);
+        
+        // 检查数据是否有效
+        const hasValidData = data && (
+          (data.monthlyData && data.monthlyData.length > 0) ||
+          (data.summary) ||
+          (data.aiAdvice)
+        );
+        
+        console.log('ProtectedRoute数据有效性:', hasValidData);
+        return hasValidData;
       } catch (error) {
+        console.error('ProtectedRoute数据解析错误:', error);
         return false;
       }
     }
+    console.log('ProtectedRoute没有找到数据');
     return false;
   };
 

@@ -181,9 +181,16 @@ const DataInputPage = () => {
         message.success(t('dataSubmittedSuccessfully'));
         // 将数据存储到localStorage，然后跳转
         localStorage.setItem('analysisData', JSON.stringify(responseData));
-        setTimeout(() => {
-          navigate('/analysis');
-        }, 1500);
+        console.log('数据已保存到localStorage:', responseData);
+        
+        // 立即跳转，不需要延迟
+        navigate('/analysis');
+      } else if (responseData) {
+        // 如果没有success字段但有数据，也认为是成功的
+        message.success(t('dataSubmittedSuccessfully'));
+        localStorage.setItem('analysisData', JSON.stringify(responseData));
+        console.log('数据已保存到localStorage:', responseData);
+        navigate('/analysis');
       } else {
         throw new Error('后端返回数据格式错误');
       }

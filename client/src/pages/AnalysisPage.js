@@ -23,10 +23,14 @@ const AnalysisPage = () => {
   const loadAnalysisData = async () => {
     try {
       setLoading(true);
+      console.log('开始加载分析数据...');
+      
       const storedData = localStorage.getItem('analysisData');
+      console.log('localStorage中的数据:', storedData);
+      
       if (storedData) {
         const data = JSON.parse(storedData);
-        console.log('Loaded analysis data:', data); // 调试日志
+        console.log('解析后的分析数据:', data); // 调试日志
         
         setAnalysisData(data);
         
@@ -40,20 +44,27 @@ const AnalysisPage = () => {
           organicProfit: parseFloat(item.organicProfit || 0)
         }));
         
-        console.log('Converted monthly data:', convertedMonthlyData); // 调试日志
+        console.log('转换后的月度数据:', convertedMonthlyData); // 调试日志
+        console.log('数据长度:', convertedMonthlyData.length);
+        
         setMonthlyData(convertedMonthlyData);
         setSummary(data.summary || {});
         setAiAdvice(data.aiAdvice || {});
+        
+        console.log('数据设置完成');
       } else {
+        console.log('localStorage中没有找到数据');
         message.warning(t('noAnalysisData'));
         // 如果没有数据，尝试从后端获取
         try {
           const apiUrl = process.env.NODE_ENV === 'production' 
             ? '/api/data' 
             : `${apiBaseUrl}/api/data`;
+          console.log('尝试从API获取数据:', apiUrl);
           const response = await fetch(apiUrl);
           if (response.ok) {
             const data = await response.json();
+            console.log('从API获取的数据:', data);
             if (data.monthlyData && data.monthlyData.length > 0) {
               setAnalysisData(data);
               setMonthlyData(data.monthlyData);
