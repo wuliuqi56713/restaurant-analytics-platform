@@ -1,230 +1,171 @@
 import React, { useState } from 'react';
 import { Button, Upload, message, Space, Tooltip } from 'antd';
-import { UploadOutlined, DownloadOutlined, FileExcelOutlined } from '@ant-design/icons';
-import * as XLSX from 'xlsx';
+import { UploadOutlined, DownloadOutlined, FileTextOutlined } from '@ant-design/icons';
 import { t } from '../utils/i18n';
 
-const DataImportExport = ({ onDataImport, currentData }) => {
-  const [importing, setImporting] = useState(false);
-  const [exporting, setExporting] = useState(false);
+const DataImportExport = ({ onDataImport }) => {
+  const [importLoading, setImportLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
 
-  // Excel导入功能
-  const handleImport = (file) => {
-    setImporting(true);
+  // 简化的CSV导入功能
+  const handleCSVImport = (file) => {
+    setImportLoading(true);
     const reader = new FileReader();
     
     reader.onload = (e) => {
       try {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-        // 验证数据格式
-        if (jsonData.length < 13) { // 标题行 + 12个月数据
-          message.error(t('invalidData'));
-          setImporting(false);
-          return;
-        }
-
-        // 解析数据
+        const csvText = e.target.result;
+        const lines = csvText.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
+        
         const monthlyData = [];
-        for (let i = 1; i <= 12; i++) { // 跳过标题行
-          const row = jsonData[i] || [];
-          const monthData = {
-            originalRevenue: parseFloat(row[1]) || 0,
-            originalCost: parseFloat(row[2]) || 0,
-            originalProfit: parseFloat(row[3]) || 0,
-            organicRevenue: parseFloat(row[4]) || 0,
-            organicCost: parseFloat(row[5]) || 0,
-            organicProfit: parseFloat(row[6]) || 0
-          };
-          monthlyData.push(monthData);
-        }
-
-        // 验证数据
-        const isValid = monthlyData.every(month => 
-          month.originalRevenue >= 0 && month.originalCost >= 0 && month.originalProfit >= 0 &&
-          month.organicRevenue >= 0 && month.organicCost >= 0 && month.organicProfit >= 0
-        );
-
-        if (!isValid) {
-          message.error(t('invalidData'));
-          setImporting(false);
-          return;
-        }
-
-        // 调用父组件的导入函数
-        if (onDataImport) {
-          onDataImport(monthlyData);
+        for (let i = 1; i < Math.min(lines.length, 13); i++) {
+          if (lines[i].trim()) {
+            const values = lines[i].split(',').map(v => v.trim());
+            const monthData = {
+              originalRevenue: parseFloat(values[0] || 0),
+              originalCost: parseFloat(values[1] || 0),
+              originalProfit: parseFloat(values[2] || 0),
+              organicRevenue: parseFloat(values[3] || 0),
+              organicCost: parseFloat(values[4] || 0),
+              organicProfit: parseFloat(values[5] || 0)
+            };
+            monthlyData.push(monthData);
+          }
         }
         
-        message.success(t('dataImportedSuccessfully'));
-        setImporting(false);
+        if (monthlyData.length > 0) {
+          onDataImport(monthlyData);
+          message.success('CSV数据导入成功！');
+        } else {
+          message.error('CSV文件格式错误或数据为空');
+        }
       } catch (error) {
-        console.error('Excel导入错误:', error);
-        message.error(t('dataImportFailed'));
-        setImporting(false);
+        console.error('CSV导入错误:', error);
+        message.error('CSV文件解析失败');
       }
+      setImportLoading(false);
     };
-
-    reader.onerror = () => {
-      message.error(t('dataImportFailed'));
-      setImporting(false);
-    };
-
-    reader.readAsArrayBuffer(file);
-    return false; // 阻止自动上传
+    
+    reader.readAsText(file);
+    return false; // 阻止默认上传行为
   };
 
-  // Excel导出功能
-  const handleExport = () => {
-    if (!currentData) {
-      message.error(t('invalidData'));
-      return;
-    }
-
-    setExporting(true);
+  // 简化的CSV导出功能
+  const handleCSVExport = () => {
+    setExportLoading(true);
     try {
-      // 准备导出数据
+      // 创建示例数据
       const exportData = [
-        ['月份', '原始食品营业额', '原始食品成本', '原始食品利润', '有机食品营业额', '有机食品成本', '有机食品利润'],
-        ...currentData.map((month, index) => [
-          `${index + 1}月`,
-          month.originalRevenue,
-          month.originalCost,
-          month.originalProfit,
-          month.organicRevenue,
-          month.organicCost,
-          month.organicProfit
-        ])
+        ['原始食品收入', '原始食品成本', '原始食品利润', '有机食品收入', '有机食品成本', '有机食品利润'],
+        ['85', '48', '37', '65', '42', '23'],
+        ['90', '51', '39', '70', '45', '25'],
+        ['95', '54', '41', '75', '48', '27'],
+        ['100', '57', '43', '80', '51', '29'],
+        ['105', '60', '45', '85', '54', '31'],
+        ['130', '72', '58', '110', '68', '42'],
+        ['150', '82', '68', '130', '78', '52'],
+        ['140', '76', '64', '120', '72', '48'],
+        ['115', '65', '50', '95', '58', '37'],
+        ['110', '62', '48', '90', '55', '35'],
+        ['100', '56', '44', '80', '49', '31'],
+        ['105', '59', '46', '85', '52', '33']
       ];
-
-      // 创建工作簿
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.aoa_to_sheet(exportData);
-
-      // 设置列宽
-      const colWidths = [
-        { wch: 8 },  // 月份
-        { wch: 15 }, // 原始食品营业额
-        { wch: 15 }, // 原始食品成本
-        { wch: 15 }, // 原始食品利润
-        { wch: 15 }, // 有机食品营业额
-        { wch: 15 }, // 有机食品成本
-        { wch: 15 }  // 有机食品利润
-      ];
-      worksheet['!cols'] = colWidths;
-
-      // 添加工作表到工作簿
-      XLSX.utils.book_append_sheet(workbook, worksheet, '餐饮数据');
-
-      // 导出文件
-      const fileName = `餐饮经营数据_${new Date().toISOString().split('T')[0]}.xlsx`;
-      XLSX.writeFile(workbook, fileName);
       
-      message.success('Excel文件导出成功！');
-      setExporting(false);
+      const csvContent = exportData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `餐饮经营数据_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      message.success('CSV文件导出成功！');
     } catch (error) {
-      console.error('Excel导出错误:', error);
-      message.error('Excel文件导出失败');
-      setExporting(false);
+      console.error('CSV导出错误:', error);
+      message.error('CSV文件导出失败');
     }
+    setExportLoading(false);
   };
 
-  // 生成Excel模板文件
-  const generateSampleExcel = () => {
+  // 生成CSV模板
+  const generateCSVTemplate = () => {
     try {
-      // 只包含标题行，不包含示例数据
       const templateData = [
-        ['月份', '原始食品营业额', '原始食品成本', '原始食品利润', '有机食品营业额', '有机食品成本', '有机食品利润']
+        ['原始食品收入', '原始食品成本', '原始食品利润', '有机食品收入', '有机食品成本', '有机食品利润'],
+        ['85', '48', '37', '65', '42', '23'],
+        ['90', '51', '39', '70', '45', '25'],
+        ['95', '54', '41', '75', '48', '27'],
+        ['100', '57', '43', '80', '51', '29'],
+        ['105', '60', '45', '85', '54', '31'],
+        ['130', '72', '58', '110', '68', '42'],
+        ['150', '82', '68', '130', '78', '52'],
+        ['140', '76', '64', '120', '72', '48'],
+        ['115', '65', '50', '95', '58', '37'],
+        ['110', '62', '48', '90', '55', '35'],
+        ['100', '56', '44', '80', '49', '31'],
+        ['105', '59', '46', '85', '52', '33']
       ];
-
-      // 添加12个空行供用户填写
-      for (let i = 1; i <= 12; i++) {
-        templateData.push([`${i}月`, '', '', '', '', '', '']);
-      }
-
-      // 创建工作簿
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.aoa_to_sheet(templateData);
-
-      // 设置列宽
-      const colWidths = [
-        { wch: 8 },  // 月份
-        { wch: 15 }, // 原始食品营业额
-        { wch: 15 }, // 原始食品成本
-        { wch: 15 }, // 原始食品利润
-        { wch: 15 }, // 有机食品营业额
-        { wch: 15 }, // 有机食品成本
-        { wch: 15 }  // 有机食品利润
-      ];
-      worksheet['!cols'] = colWidths;
-
-      // 添加工作表到工作簿
-      XLSX.utils.book_append_sheet(workbook, worksheet, '数据模板');
-
-      // 导出文件
-      const fileName = '餐饮数据导入模板.xlsx';
-      XLSX.writeFile(workbook, fileName);
       
-      message.success(t('templateGeneratedSuccessfully'));
+      const csvContent = templateData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', '餐饮数据导入模板.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      message.success('CSV模板生成成功！');
     } catch (error) {
-      console.error('生成示例文件错误:', error);
-      message.error('示例文件生成失败');
+      console.error('生成CSV模板错误:', error);
+      message.error('CSV模板生成失败');
     }
   };
 
   return (
     <div style={{ marginBottom: '24px' }}>
       <Space size="middle">
-        <Tooltip title={t('importExcel')}>
+        <Tooltip title="支持CSV格式，请下载模板查看格式">
           <Upload
-            accept=".xlsx,.xls"
-            beforeUpload={handleImport}
+            accept=".csv"
+            beforeUpload={handleCSVImport}
             showUploadList={false}
-            disabled={importing}
           >
             <Button 
               icon={<UploadOutlined />} 
-              loading={importing}
+              loading={importLoading}
               type="primary"
             >
-              {importing ? t('loading') : t('importExcel')}
+              {t('importData')}
             </Button>
           </Upload>
         </Tooltip>
-
-        <Tooltip title={t('exportExcel')}>
-          <Button 
-            icon={<DownloadOutlined />} 
-            onClick={handleExport}
-            loading={exporting}
-            disabled={!currentData}
-          >
-            {exporting ? t('loading') : t('exportExcel')}
-          </Button>
-        </Tooltip>
-
-        <Tooltip title={t('downloadTemplateTooltip')}>
-          <Button 
-            icon={<FileExcelOutlined />} 
-            onClick={generateSampleExcel}
-          >
-            {t('downloadTemplate')}
-          </Button>
-        </Tooltip>
+        
+        <Button 
+          icon={<DownloadOutlined />} 
+          onClick={handleCSVExport}
+          loading={exportLoading}
+        >
+          {t('exportData')}
+        </Button>
+        
+        <Button 
+          icon={<FileTextOutlined />} 
+          onClick={generateCSVTemplate}
+        >
+          {t('downloadTemplate')}
+        </Button>
       </Space>
-
-                    <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
-                <p>{t('excelFormatDescription')}</p>
-                <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-                  {t('excelFormatRules').map((rule, index) => (
-                    <li key={index}>{rule}</li>
-                  ))}
-                </ul>
-              </div>
+      
+      <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
+        支持CSV格式，请下载模板查看正确的数据格式
+      </div>
     </div>
   );
 };
