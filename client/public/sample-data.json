@@ -1,0 +1,47 @@
+{
+  "monthlyData": [
+    {"originalRevenue": 85, "originalCost": 48, "originalProfit": 37, "organicRevenue": 65, "organicCost": 42, "organicProfit": 23},
+    {"originalRevenue": 90, "originalCost": 51, "originalProfit": 39, "organicRevenue": 70, "organicCost": 45, "organicProfit": 25},
+    {"originalRevenue": 95, "originalCost": 54, "originalProfit": 41, "organicRevenue": 75, "organicCost": 48, "organicProfit": 27},
+    {"originalRevenue": 100, "originalCost": 57, "originalProfit": 43, "organicRevenue": 80, "organicCost": 51, "organicProfit": 29},
+    {"originalRevenue": 105, "originalCost": 60, "originalProfit": 45, "organicRevenue": 85, "organicCost": 54, "organicProfit": 31},
+    {"originalRevenue": 130, "originalCost": 72, "originalProfit": 58, "organicRevenue": 110, "organicCost": 68, "organicProfit": 42},
+    {"originalRevenue": 150, "originalCost": 82, "originalProfit": 68, "organicRevenue": 130, "organicCost": 78, "organicProfit": 52},
+    {"originalRevenue": 140, "originalCost": 76, "originalProfit": 64, "organicRevenue": 120, "organicCost": 72, "organicProfit": 48},
+    {"originalRevenue": 115, "originalCost": 65, "originalProfit": 50, "organicRevenue": 95, "organicCost": 58, "organicProfit": 37},
+    {"originalRevenue": 110, "originalCost": 62, "originalProfit": 48, "organicRevenue": 90, "organicCost": 55, "organicProfit": 35},
+    {"originalRevenue": 100, "originalCost": 56, "originalProfit": 44, "organicRevenue": 80, "organicCost": 49, "organicProfit": 31},
+    {"originalRevenue": 105, "originalCost": 59, "originalProfit": 46, "organicRevenue": 85, "organicCost": 52, "organicProfit": 33}
+  ],
+  "summary": {
+    "totalRevenue": 1325,
+    "totalCost": 742,
+    "totalProfit": 583,
+    "original": {
+      "totalRevenue": 1325,
+      "totalCost": 742,
+      "totalProfit": 583,
+      "costRatio": 56.0,
+      "profitRatio": 44.0
+    },
+    "organic": {
+      "totalRevenue": 1110,
+      "totalCost": 672,
+      "totalProfit": 438,
+      "costRatio": 60.5,
+      "profitRatio": 39.5
+    },
+    "comparison": {
+      "revenueGrowthRate": -16.2,
+      "costGrowthRate": -9.4,
+      "profitGrowthRate": -24.9,
+      "marginChange": -4.5,
+      "costRatioChange": 4.5,
+      "revenueIncrease": -215,
+      "costIncrease": -70,
+      "profitIncrease": -145
+    }
+  },
+  "aiAdvice": "基于您的餐饮数据分析，我为您提供以下战略建议：\n\n1. **成本控制优化**：原始食品成本率为56%，有机食品为60.5%，建议通过供应链优化和批量采购降低有机食品成本。\n\n2. **季节性策略**：6-8月是营收高峰期，建议增加营销投入和人员配置，提前准备库存。\n\n3. **产品结构调整**：有机食品利润率较低但市场需求稳定，建议适当提高价格或寻找更优质的供应商。\n\n4. **现金流管理**：全年现金流波动较大，建议建立应急资金池，确保淡季运营稳定。\n\n5. **增长机会**：考虑在营收高峰期推出限时促销活动，提高客户转化率。"
+}
+
