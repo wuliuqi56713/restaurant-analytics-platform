@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Typography, Button, Spin, List, Tag } from 'antd';
+import { Card, Typography, Button, Spin, List } from 'antd';
 import { RobotOutlined, BulbOutlined } from '@ant-design/icons';
 import { t } from '../utils/i18n';
 

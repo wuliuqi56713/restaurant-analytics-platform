@@ -16,7 +16,6 @@ const DataImportExport = ({ onDataImport }) => {
       try {
         const csvText = e.target.result;
         const lines = csvText.split('\n');
-        const headers = lines[0].split(',').map(h => h.trim());
         
         const monthlyData = [];
         for (let i = 1; i < Math.min(lines.length, 13); i++) {
